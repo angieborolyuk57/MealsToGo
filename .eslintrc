@@ -1,0 +1,15 @@
+{
+    "extends": ["@react-native-community", "prettier"],
+    "rules": {
+      "quotes": [2, "double", {"avoidEscape": true}],
+      "react/jsx-uses-react": "error",
+      "react/jsx-uses-vars": "error"
+    },
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "plugins": ["react"]
+  }
+  
