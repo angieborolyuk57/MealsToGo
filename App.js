@@ -1,56 +1,84 @@
-import React from "react";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import React from "react";
+import { Text } from "react-native";
+import { ThemeProvider } from "styled-components/native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { StyleSheet, View, Text } from "react-native";
-import { RestaurantsScreen } from "./src/features/screens/restaurants.screen";
-import { ThemeProvider } from "styled-components/native";
+import { Ionicons } from "@expo/vector-icons";
+
+import {
+  useFonts as useOswald,
+  Oswald_400Regular,
+} from "@expo-google-fonts/oswald";
+import { useFonts as useLato, Lato_400Regular } from "@expo-google-fonts/lato";
+
 import { theme } from "./src/infrastructure/theme";
+import { RestaurantsScreen } from "./src/features/screens/restaurants.screen";
 import { SafeArea } from "./src/components/utility/safe-area-component";
-
-function Maps() {
-  return (
-    <SafeArea>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Home!</Text>
-      </View>
-    </SafeArea>
-  );
-}
-
-function SettingsScreen() {
-  return (
-    <SafeArea>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Settings!</Text>
-      </View>
-    </SafeArea>
-  );
-}
+import { RestaurantsContextProvider } from "./src/services/restaurants/restaurant.context";
 
 const Tab = createBottomTabNavigator();
 
-function MyTabs() {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen name="Restaurant Screen" component={RestaurantsScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
-      <Tab.Screen name="Maps" component={Maps} />
-    </Tab.Navigator>
-  );
-}
+
+const TAB_ICON = {
+  Restaurants: "restaurant",
+  Map: "map",
+  Settings: "settings",
+};
+
+const Settings = () => (
+  <SafeArea>
+    <Text>Settings</Text>
+  </SafeArea>
+);
+const Map = () => (
+  <SafeArea>
+    <Text>Map</Text>
+  </SafeArea>
+);
+
+const createScreenOptions = ({ route }) => {
+  const iconName = TAB_ICON[route.name];
+  return {
+    tabBarIcon: ({ size, color }) => (
+      <Ionicons name={iconName} size={size} color={color} />
+    ),
+  };
+};
 
 export default function App() {
+  const [oswaldLoaded] = useOswald({
+    Oswald_400Regular,
+  });
+
+  const [latoLoaded] = useLato({
+    Lato_400Regular,
+  });
+
+  if (!oswaldLoaded || !latoLoaded) {
+    return null;
+  }
+
   return (
     <>
       <ThemeProvider theme={theme}>
+        <RestaurantsContextProvider> 
         <NavigationContainer>
-          <MyTabs />
+          <Tab.Navigator
+            screenOptions={createScreenOptions}
+            tabBarOptions={{
+              activeTintColor: "tomato",
+              inactiveTintColor: "gray",
+            }}
+          >
+            <Tab.Screen name="Restaurants" component={RestaurantsScreen} />
+            <Tab.Screen name="Map" component={Map} />
+            <Tab.Screen name="Settings" component={Settings} />
+          </Tab.Navigator>
         </NavigationContainer>
+        </RestaurantsContextProvider>
       </ThemeProvider>
       <ExpoStatusBar style="auto" />
     </>
   );
 }
-
-const styles = StyleSheet.create({});
